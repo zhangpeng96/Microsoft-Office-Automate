@@ -1,38 +1,39 @@
+"""
+    Change all background color for PowerPoint
+
+    references:
+      https://learn.microsoft.com/zh-cn/office/vba/api/powerpoint.slide.background
+      https://answers.microsoft.com/en-us/msoffice/forum/all/powerpoint-vba-to-change-slide-color/8a3f82ea-b142-4a92-9119-26adefa24dbe
+"""
+
 from win32com import client as wc
+from os import path
+from os import walk as walk
+
 
 w = wc.Dispatch('PowerPoint.Application')
-# w.Visible = 0
-doc = w.Presentations.Open("D:\\math.ppt")
-# doc.SaveAs("D:\\math3.pptx")
-# f = doc.Slides(1).BackgroundStyle
-# f = doc.Slides(5).Background.Fill
-# doc.Slides(4).FollowMasterBackground = False
-# doc.Slides(4).Background.Fill.ForeColor.RGB = 16777215
 
-for slide in list(doc.slides):
-	slide.FollowMasterBackground = False
-	slide.Background.Fill.ForeColor.RGB = 16777215
-	# print(slide.Background.Fill.ForeColor.RGB)
-doc.Save()
-# print(
-# 	doc.Slides(2).Background.Fill.ForeColor.RGB, 
-# 	doc.Slides(1).Background.Fill.ForeColor.RGB, 
-# 	doc.Slides(5).Background.Fill.ForeColor.RGB, 
-# )
- # = "255,255,255"
-# print(f)
-# doc.Close()
-# doc.Quit()
+def change_background_color(path):
+    doc = w.Presentations.Open(path)
+    for slide in list(doc.slides):
+        slide.FollowMasterBackground = False
+        slide.Background.Fill.ForeColor.RGB = 16777215 # Solid White
+    doc.Save()
+    print('Convert finished {}'.format(path))
+    doc.Close()
 
 
-"""
-https://learn.microsoft.com/zh-cn/office/vba/api/powerpoint.slide.background
-https://answers.microsoft.com/en-us/msoffice/forum/all/powerpoint-vba-to-change-slide-color/8a3f82ea-b142-4a92-9119-26adefa24dbe
-Sub test()
-    With ActivePresentation.Slides(2)
-    .FollowMasterBackground = False
-    .Background.Fill.Solid
-        .Background.Fill.ForeColor.RGB = RGB(255, 255, 255)
-    End With
-End Sub
-"""
+files_list = []
+path_input = input('Enter dir: ')
+if path.isdir(path_input):
+    for _, _, files in walk(path_input):
+        for file in files:
+            if path.splitext(file)[-1] in ('.ppt', '.pptx'):
+                files_list.append( path.join(path_input, file) )
+
+    # print(files_list)
+    for file in files_list:
+        change_background_color(file)
+
+else:
+    print('error')
