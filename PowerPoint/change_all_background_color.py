@@ -18,9 +18,17 @@ def change_background_color(path):
     for slide in list(doc.slides):
         slide.FollowMasterBackground = False
         slide.Background.Fill.ForeColor.RGB = 16777215 # Solid White
+        change_textframe_color(slide)
     doc.Save()
     print('Convert finished {}'.format(path))
     doc.Close()
+
+def change_textframe_color(slide):
+    # https://learn.microsoft.com/en-us/office/vba/api/powerpoint.textframe.hastext
+    # https://learn.microsoft.com/en-us/office/vba/api/powerpoint.textrange.font
+    for shape in slide.Shapes:
+        if shape.TextFrame.HasText and shape.TextFrame.TextRange.Font.Color.RGB == 16777215:
+            shape.TextFrame.TextRange.Font.Color.RGB = 0
 
 
 files_list = []
